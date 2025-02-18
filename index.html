@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forgiveness Game</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      position: relative;
+    }
+    .container {
+      text-align: center;
+    }
+    button {
+      font-size: 18px;
+      padding: 15px 25px;
+      margin: 10px;
+      border: none;
+      cursor: pointer;
+    }
+    #yesBtn {
+      background-color: #4CAF50;
+      color: white;
+    }
+    #noBtn {
+      background-color: #f44336;
+      color: white;
+    }
+    .no-clone {
+      position: absolute;
+      font-size: 18px;
+      padding: 15px 25px;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Will you please forgive me?</h1>
+    <button id="yesBtn">Yes</button>
+    <button id="noBtn">No</button>
+  </div>
+
+  <script>
+    let noBtn = document.getElementById("noBtn");
+    let yesBtn = document.getElementById("yesBtn");
+
+    let displacementCount = 0; // Track how many times the "No" button has been displaced
+    let originalBtnPos = { x: noBtn.offsetLeft, y: noBtn.offsetTop };
+    let angleIncrement = 15; // The angle change for each new clone around the original button
+    let radius = 100; // Radius around the original button for clones to appear
+
+    // Get Yes button's position to avoid overlap
+    let yesBtnRect = yesBtn.getBoundingClientRect();
+
+    // Function to create clones around the original button
+    function createClone(x, y) {
+      let clone = document.createElement("button");
+      clone.classList.add("no-clone");
+      clone.innerHTML = "No";
+
+      // Create a random angle around the original button
+      let randomAngle = Math.random() * Math.PI * 2;
+
+      // Calculate position of the clone
+      let cloneX = x + radius * Math.cos(randomAngle);
+      let cloneY = y + radius * Math.sin(randomAngle);
+
+      // Avoid overlapping with the "Yes" button
+      while (cloneX < yesBtnRect.right && cloneX > yesBtnRect.left &&
+             cloneY < yesBtnRect.bottom && cloneY > yesBtnRect.top) {
+        randomAngle = Math.random() * Math.PI * 2; // Get a new angle
+        cloneX = x + radius * Math.cos(randomAngle);
+        cloneY = y + radius * Math.sin(randomAngle);
+      }
+
+      // Set the position of the clone button
+      clone.style.left = cloneX + "px";
+      clone.style.top = cloneY + "px";
+
+      document.body.appendChild(clone);
+    }
+
+    // Move the "No" button and start creating clones after a couple of displacements
+    noBtn.addEventListener("click", () => {
+      displacementCount++;
+
+      // Move the "No" button to a random position
+      let randomX = Math.floor(Math.random() * (window.innerWidth - noBtn.offsetWidth));
+      let randomY = Math.floor(Math.random() * (window.innerHeight - noBtn.offsetHeight));
+      noBtn.style.position = "absolute";
+      noBtn.style.left = randomX + "px";
+      noBtn.style.top = randomY + "px";
+
+      originalBtnPos = { x: randomX, y: randomY }; // Update the original position
+
+      // Start creating clones after 3 displacements
+      if (displacementCount >= 5) {
+        createClone(originalBtnPos.x, originalBtnPos.y); // Create a new clone around the original button
+      }
+    });
+
+    yesBtn.addEventListener("click", () => {
+      alert("Thank you for forgiving me!");
+    });
+  </script>
+</body>
+</html>
